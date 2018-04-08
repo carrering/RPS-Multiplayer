@@ -1,0 +1,32 @@
+body{
+    background-color:#e3e3e3;
+    color:black;
+}
+
+#add-gif{
+    margin-top:10px;
+}
+
+.cars{
+    margin:5px;
+}
+
+.giphy{
+    margin:5px;
+    width:150px;
+    height:auto;
+    max-height:150px;
+    
+}
+
+
+.rating{
+    margin:5px;
+    margin-top:10px;
+    width:150px;
+    height:200px;
+    text-align:center;
+    float:left;
+
+}
+
