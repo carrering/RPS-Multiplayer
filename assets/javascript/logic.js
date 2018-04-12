@@ -135,6 +135,7 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
     var state = $(this).attr("data-name")
   
     console.log("name:",state)
+    $("#player1-rps").html("<h3>"+state+"</h3>")
   
   })
   
@@ -144,6 +145,8 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
     var state = $(this).attr("data-name")
   
     console.log("name:",state)
+
+    $("#player2-rps").html("<h3>"+state+"</h3>")
   
   })
   
@@ -199,6 +202,6 @@ function(error) {
 
 
 
-checkPlayer2()
+// checkPlayer2()
 
 
