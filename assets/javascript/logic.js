@@ -18,6 +18,20 @@ var db = firebase.database()
 
 var userID = 1
 
+//create a player object
+function myPlayer(id, name, win, loss){
+  this.id = id
+  this.name = name
+  this.win = win
+  this.loss = loss
+}
+
+
+//create chat object
+function myChat(id, message){
+  this.id = id
+  this.message = message
+}
 
 $( document ).ready(function() {
   console.log( "ready!" );
@@ -70,14 +84,15 @@ $("#add-player").on("click", function(event){
     // })
 })
 
-// function checkPlayer2(){
-//   var playersRef = db.ref("users/")
-//   var player1name = playersRef[1].name 
-//   // var player2name = db.ref("users/").child("2").val().name 
-//   //  $("#tester").html=player1name
-//   console.log(playersRef)
+function checkPlayer2(){
+
+  var playersRef = db.ref("users/")
+  // var player1name = playersRef[1].name 
+  // var player2name = db.ref("users/").child("2").val().name 
+  //  $("#tester").html=player1name
+  console.log(playersRef)
   
-// }
+}
 
 function writeUserData(name, rpsChosen, numberWins, numberLosses) {
   var playersRef = db.ref("users/")      
@@ -136,6 +151,14 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
   
     console.log("name:",state)
     $("#player1-rps").html("<h3>"+state+"</h3>")
+
+    var p1Ref = db.ref("users/1")
+
+    p1Ref.update ({
+    "rpsChosen": state
+    })
+
+
   
   })
   
@@ -147,6 +170,13 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
     console.log("name:",state)
 
     $("#player2-rps").html("<h3>"+state+"</h3>")
+
+    var p2Ref = db.ref("users/2")
+
+    p2Ref.update ({
+    "rpsChosen": state
+    })
+
   
   })
   
