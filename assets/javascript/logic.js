@@ -16,204 +16,189 @@ var config = {
 
 var db = firebase.database()
 
+var userID = 1
 
-var name = "";
-var role = "";
-var startDate = "01/01/2000";
-var monthlyRate = 0;
 
-$("#add-employee").on("click", function(event){
+$( document ).ready(function() {
+  console.log( "ready!" );
+
+    // var name = "Player 1"
+    // var rpsChosen = ""
+    // var numberWins = 0
+    // var numberLosses = 0
+    
+    // writeUserData(name,rpsChosen,numberWins,numberLosses)
+
+})
+
+$("#add-message").on("click", function(event){
+  //  getUser()
+  checkPlayer2()
+  //playTheGame()
+    
+})
+
+
+
+$("#add-player").on("click", function(event){
     event.preventDefault();
 
-    name = $("#name-input").val().trim()
-    role = $("#role-input").val().trim()
-    startDate = $("#start-input").val()
-    monthlyRate = parseInt($("#rate-input").val())
+    var name = $("#name-input").val().trim()
+    var rpsChosen = ""
+    var numberWins = 0
+    var numberLosses = 0
+
+    $("#player1-name").html(name)
+
+    $(".add-player").hide()
+    console.log(db.ref('users'))
 
     console.log(name)
-    console.log(role)
-    console.log(startDate)
-    console.log(monthlyRate)
+    console.log(numberWins)
+    console.log(numberLosses)
+    
+    writeUserData(name,rpsChosen,numberWins,numberLosses)
+    
 
-    db.ref().push({
+    // db.ref().push({
+    //   name: name,
+    //   playerChosen: playerChosen,
+    //   rpsChosen: rpsChosen,
+    //   numberWins: numberWins,
+    //   numberLosses:numberLosses,
+    //   dateAdded: firebase.database.ServerValue.TIMESTAMP  
+    // })
+})
+
+// function checkPlayer2(){
+//   var playersRef = db.ref("users/")
+//   var player1name = playersRef[1].name 
+//   // var player2name = db.ref("users/").child("2").val().name 
+//   //  $("#tester").html=player1name
+//   console.log(playersRef)
+  
+// }
+
+function writeUserData(name, rpsChosen, numberWins, numberLosses) {
+  var playersRef = db.ref("users/")      
+  playersRef.set({
+    1:{
       name: name,
-      role: role,
-      startDate: startDate,
-      monthlyRate: monthlyRate,
-      dateAdded: firebase.database.ServerValue.TIMESTAMP  
-    })
+      numberWins: numberWins,
+      numberLosses: numberLosses,
+      rpsChosen: "",
+      dateAdded: firebase.database.ServerValue.TIMESTAMP    
+
+    },
+    2:{
+      name: "Player 2",
+      numberWins: 0,
+      numberLosses: 0,
+      rpsChosen: "",
+      dateAdded: firebase.database.ServerValue.TIMESTAMP    
+  
+    }
+               })
+  }
+
+  
+
+  function updateUser(){
+
+    var playersRef = db.ref("users/")
+
+  playersRef.push({
+    1:{
+      name: "Enzo",
+      numberWins: 0,
+      numberLosses: 0,
+      rpsChosen: "r"
+    },
+    2:{
+      name: "Ferrari",
+      numberWins: 0,
+      numberLosses: 0,
+      rpsChosen: "p"     
+    }
+  })
+
+    // var userId = firebase.auth().currentUser.uid;
+    // return db.ref('/users/' + userId).once('value').then(function(snapshot) {
+    //   var username = (snapshot.val() && snapshot.val().name) || 'Anonymous';
+    //   console.log('my username is:',username)
+    // });
+  }
+
+
+  $(document).on("click", ".p1rps", function() {
+  
+    var state = $(this).attr("data-name")
+  
+    console.log("name:",state)
+  
+  })
+  
+
+  $(document).on("click", ".p2rps", function() {
+  
+    var state = $(this).attr("data-name")
+  
+    console.log("name:",state)
+  
+  })
+  
+
+// db.ref().orderByChild("dateAdded").on("child_added", function(childSnapshot) {
+
+
+//     var myName = childSnapshot.val().name
+//     console.log("child name:",myName)
+
+// })
+
+
+// function to log on to and create player 1
+// if player 1 does not say player 1 then this will be player 2.
+// if it says player 1 or doesn't exist create player 1 with name
+
+
+
+
+
+
+
+function playTheGame(){
+  var winRef = db.ref().child("users").child("1").child('numberWins');
+
+  winRef.transaction(function(currentNumberWins) {
+     return currentNumberWins + 1;
+  })
+
+}
+
+
+db.ref().on('value', function(snapshot) {
+  if (!snapshot.val()) {
+    return
+  }
+
+  $('#player1-name').text( snapshot.child("users").child("1").val().name )
+  $("#player1-win-count").text( snapshot.child("users").child("1").val().numberWins)
+  $("#player1-loss-count").text( snapshot.child("users").child("1").val().numberLosses)
+  
+
+
+  $('#player2-name').text( snapshot.child("users").child("2").val().name )
+  $("#player2-win-count").text( snapshot.child("users").child("2").val().numberWins)
+  $("#player2-loss-count").text( snapshot.child("users").child("2").val().numberLosses)
+  console.log(snapshot.val())
+},
+function(error) {
+  console.error('Firebase error: ', error)
 })
 
 
-var databasePush = []
+
+checkPlayer2()
 
 
-db.ref().orderByChild("dateAdded").on("child_added", function(childSnapshot) {
-
-var empStartPretty = moment.unix(empStart).format("MM/DD/YY")
-
-var empMonths = moment()
-
-// var tr = $(`<tr data-key=${childSnapshot.key}>`)
-// tr.append($('<td>').text(empName))
-
-    var employeeRow = $("<div>")
-    employeeRow.attr("class","row employee-data-row")
-    var nameCol = $("<div>")
-    nameCol.attr("class","col-md-2 employee-name-column")
-    nameCol.text(childSnapshot.val().name)
-    var roleCol = $("<div>")
-    roleCol.attr("class","col-md-2 employee-role-column")
-    roleCol.text(childSnapshot.val().role)
-    var startCol = $("<div>")
-    startCol.attr("class","col-md-2 employee-start-column")
-    startCol.text(childSnapshot.val().startDate)
-    var monthsBilled = 100
-    var monthsCol = $("<div>")
-    monthsCol.attr("class","col-md-2 employee-billed-column")
-    monthsCol.text(monthsBilled)
-    var rateCol = $("<div>")
-    rateCol.attr("class","col-md-2 employee-rate-column")
-    rateCol.text(childSnapshot.val().monthlyRate)
-    var totalBilled = childSnapshot.val().monthlyRate * monthsBilled
-    var totalCol = $("<div>")
-    totalCol.attr("class","col-md-2 employee-total-column")
-    totalCol.text(totalBilled)
-    employeeRow.append(nameCol)
-    employeeRow.append(roleCol)
-    employeeRow.append(startCol)
-    employeeRow.append(monthsCol)
-    employeeRow.append(rateCol)
-    employeeRow.append(totalCol)
-    $("#employee-header-row").append(employeeRow)
-    console.log(childSnapshot.val().name)
-}, function(errorObject){
-    console.log("got an error")
-})
-
-
-
-
-// Initial Values
-// var initialBid = 0;
-// var initialBidder = "No one :-(";
-// var highPrice = initialBid;
-// var highBidder = initialBidder;
-
-// db.ref().push({
-//     initialBid: initialBid,
-//     initialBidder: initialBidder,
-//     highPrice: initialBid,
-//     highBidder: initialBidder,
-//     dateAdded: firebase.database.ServerValue.TIMESTAMP
-// })
-
-
-//db.ref(/members).push
-
-
-// db.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function(snapshot){
-
-// })
-// --------------------------------------------------------------
-
-//  At the page load and subsequent value changes, get a snapshot of the stored data.
-// This function allows you to update your page in real-time when the firebase database changes.
-
-// Capture Button Click
-// $("#submit-bid").on("click", function() {
-//     // Don't refresh the page!
-//     event.preventDefault();
-//     console.log("highPrice:",highPrice)
-
-//     var currentBidder = $("#bidder-name").val().trim()
-//     var currentPrice = parseFloat($("#bidder-price").val().trim())
-
-//     if(currentPrice > highPrice){
-//         $("#your-price").html("You are winning!")
-//         highPrice = currentPrice
-//         highBidder = currentBidder
-//         db.ref().set({
-//             initialBid: initialBid,
-//             initialBidder: initialBidder,
-//             highPrice: highPrice,
-//             highBidder: highBidder
-//         })
-//     }
-//     else{
-//         $("#your-price").html("you are a cheapskate!")
-//         console.log("you are a cheapskate!")
-//     }
-
-
-// })
-
-
-
-
-// If Firebase has a highPrice and highBidder stored (first case)
-
-
-// Set the variables for highBidder/highPrice equal to the stored values in firebase.
-// highPrice = ...
-// highBidder = ...
-// db.ref().on("value", function(snapshot){
-//     var val = snapshot.val()
-//     if (!snapshot.val()) {
-//       return
-//     }
-//     if (val){
-//         highPrice = parseInt(val.highPrice)
-//         highBidder = val.highBidder
-//     }
-//     $("#highest-bidder").text(val.highBidder)
-//     $("#highest-price").text(val.highPrice)
-//   })
-
-// Change the HTML to reflect the stored values
-
-
-// Print the data to the console.
-
-
-// Else Firebase doesn't have a highPrice/highBidder, so use the initial local values.
-
-
-// Change the HTML to reflect the initial values
-
-
-// Print the data to the console.
-
-
-
-
-// --------------------------------------------------------------
-
-// Whenever a user clicks the submit-bid button
-
-// prevent form from submitting with event.preventDefault() or returning false
-
-// Get the input values
-
-
-// Log the Bidder and Price (Even if not the highest)
-
-
-// If Then statements to compare against previous high bidder
-
-
-// Alert that they are High Bidder
-
-
-// Save the new price in Firebase
-
-
-// Log the new High Price
-
-
-// Store the new high price and bidder name as a local variable (could have also used the firebase variable)
-
-
-// Change the HTML to reflect the new high price and bidder
-
-// Else tell user their bid was too low via alert

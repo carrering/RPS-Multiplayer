@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Employee Data Management</title> 
+    <title>Rock Paper Scissors Ultimate Deathmatch</title> 
  
     <!-- Added a link to Bootstrap-->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -17,81 +17,108 @@
     
 <div class="container">
     <div class="row"><!--Header block -->
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <div class="row">
-                <div class="col-md-10 header-block">
-                        Employee Data Management
+        
+                <div class="col-md-12 header-block">
+                        <h2>Rock Paper Scissors DEATHMATCH</h2>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-1"></div>
     </div>
-    <div class="row"><!--Current Employee -->
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
-                <div class="row">
-                    <div class="col-md-10 blue-header">
-                            Current Employees
-                    </div>
-                </div>
-                <div class="row" id="employee-header-row">
-                        <div class="col-md-2 current-employee-head">Employee Name</div>
-                        <div class="col-md-2 current-employee-head">Role</div>
-                        <div class="col-md-2 current-employee-head">Start Date</div>
-                        <div class="col-md-2 current-employee-head">Months Worked</div>
-                        <div class="col-md-2 current-employee-head">Monthly Rate ($)</div>
-                        <div class="col-md-2 current-employee-head">Total Billed ($)</div>
-                </div>
-                <div class="row employee-data-row"><!-- All the data-->
-                    <div class="col-md-2 current-employee-head">Employee Name</div>
-                    <div class="col-md-2 current-employee-head">Role</div>
-                    <div class="col-md-2 current-employee-head">Start Date</div>
-                    <div class="col-md-2 current-employee-head">Months Worked</div>
-                    <div class="col-md-2 current-employee-head">Monthly Rate ($)</div>
-                    <div class="col-md-2 current-employee-head">Total Billed ($)</div>
-
-                </div>
+    <div class="row"><!--Match Stats -->
+            <div class="col-md-2"></div>
+            <div class="col-md-8 header-block">
+                <h2>Match Stats</h2>
             </div>
-            <div class="col-md-1"></div>
+            <div class="col-md-2"></div>
     </div>
-    <div class="row"><!--Add Employee -->
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <div class="row">
-                <div class="col-md-10 blue-header">
-                        Add Employee
-                </div>
-            </div>
-            <div class="row">
-                    <div class="col-md-12 add-employee">
-                            <form role="form">
-                                    <div class="form-group">
-                                      <label for="name-input">Employee Name:</label>
-                                      <input class="form-control" id="name-input" type="text">
-                                    </div>
-                                    <div class="form-group">
-                                      <label for="role-input">Role:</label>
-                                      <input class="form-control" id="role-input" type="text">
-                                    </div>
-                                    <div class="form-group">
-                                      <label for="start-input">Start Date (mm/dd/yyyy):</label>
-                                      <input class="form-control" id="start-input" type="date">
-                                    </div>
-                                    <div class="form-group">
-                                            <label for="rate-input">Monthly Rate:</label>
-                                            <input class="form-control" id="rate-input" type="text">
-                                          </div>
-                                    <button class="btn btn-default" id="add-employee" type="submit">Submit</button>
-                                  </form>
-                      
-                    </div>
-            </div>
+    <div class="row"><!--Match Stats Header -->
+        <div class="col-md-4">
+                <h3>Player 1</h3>
         </div>
-        <div class="col-md-1"></div>
-</div>
+        <div class="col-md-4 header-block">
+            
+        </div>
+        <div class="col-md-4 header-block">
+            <h3>Player 2</h3>
+        </div>
+    </div>
+    <div class="row"><!--Match Stats -->
+        <div class="col-md-4">
+                Player 1:&nbsp;<div id="player1-name"></div>
+                Wins:&nbsp;<div id="player1-win-count"></div>
+                Losses:&nbsp;<div id="player1-loss-count"></div>
+    
+        </div>
+        <div class="col-md-4">
+                    </div>
+        <div class="col-md-4">
+            Player 2:&nbsp;<div id="player2-name"></div>
+            Wins:&nbsp;<div id="player2-win-count"></div>
+            Losses:&nbsp;<div id="player2-loss-count"></div>
 
-</div>
+        </div>
+    </div>
+
+    <div class="row"><!--pick your weapon -->
+        <div class="col-md-4">
+            <img src="assets/images/r.png" class="p1rps" data-name="rock">
+            <img src="assets/images/p.png" class="p1rps" data-name="paper">
+            <img src="assets/images/s.png" class="p1rps" data-name="scissors">
+
+                <h3>Player 1 Weapon Chosen</h3>
+                <div id="player1-rps">Rock</div>
+
+        </div>
+        <div class="col-md-4">
+ 
+        </div>
+        <div class="col-md-4">
+                <img src="assets/images/r.png" class="p2rps" data-name="rock">
+                <img src="assets/images/p.png" class="p2rps" data-name="paper">
+                <img src="assets/images/s.png" class="p2rps" data-name="scissors">
+    
+                <h3>Player 2 Weapon Chosen</h3>
+                <div id="player2-rps">Paper</div>
+        </div>
+       
+    </div>
+
+    <div class="row"><!--New Player Header-->
+        <div class="col-md-4"></div>
+        <div class="col-md-4 header-block">
+            New Player
+        </div>
+        <div class="col-md-4"></div>
+    </div>  
+
+    <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 add-player">
+                    <form role="form">
+                            <div class="form-group">
+                                <label for="name-input">Player Name:</label>
+                                <input class="form-control" id="name-input" type="text" size="35">
+                                <button class="btn btn-default" id="add-player" type="submit">Add Player</button>
+                            </div>
+                        </form>
+            </div>
+            <div class="col-md-2"></div>
+    </div>
+
+    <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 chat-player">
+                <form>
+                        <input type='text' id='messageInput'  placeholder='Type a message...' maxlength=140>
+                        <button class="btn btn-default" id="add-message" type="submit">Send</button>
+                </form>                                                    
+            </div>
+            <div class="col-md-2"></div>
+    </div>
+    
+    <div id="tester">Hi</div>
+
+        
+</div><!--Container-->
+
        <!-- Added link to the jQuery Library -->
        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
        <!-- Firebase -->

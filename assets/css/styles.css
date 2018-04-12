@@ -1,32 +1,35 @@
 body{
-    background-color:#e3e3e3;
-    color:black;
+    background-color:black;
+    color:whitesmoke;
 }
 
-#add-gif{
-    margin-top:10px;
+.header-block{
+    text-align: center;
+    vertical-align: center;
 }
 
-.cars{
-    margin:5px;
-}
-
-.giphy{
-    margin:5px;
-    width:150px;
-    height:auto;
-    max-height:150px;
-    
-}
-
-
-.rating{
-    margin:5px;
-    margin-top:10px;
-    width:150px;
-    height:200px;
-    text-align:center;
+#nameInput {
     float:left;
+  }
+  
+  #messageInput {
+    width:100%;
+    border-left: 0;
+    border-right: 0;
+    float:left;
+  
+  }
 
-}
 
+.chat {
+    margin: 0;
+  }
+
+  .p1rps{
+    width:100px;
+  }
+
+  .p2rps{
+    width:100px;
+  }
+ 
