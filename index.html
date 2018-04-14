@@ -83,7 +83,7 @@
 
     <div class="row"><!--New Player Header-->
         <div class="col-md-4"></div>
-        <div class="col-md-4 header-block">
+        <div class="col-md-4 header-block" id="game-message">
             New Player
         </div>
         <div class="col-md-4"></div>
@@ -106,6 +106,8 @@
     <div class="row">
             <div class="col-md-2"></div>
             <div class="col-md-8 chat-player">
+                    <textarea ID="textArea" name="textArea" rows="15" cols="90">
+                        </textarea>
                 <form>
                         <input type='text' id='messageInput'  placeholder='Type a message...' maxlength=140>
                         <button class="btn btn-default" id="add-message" type="submit">Send</button>
@@ -115,7 +117,9 @@
     </div>
     
     <div id="tester">Hi</div>
-
+    <form>
+              <button class="btn btn-default" id="iQuit" type="submit">Hit Eject</button>
+    </form>  
         
 </div><!--Container-->
 

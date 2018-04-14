@@ -1,3 +1,4 @@
+$( document ).ready(function() {
 // Initialize Firebase
 // Make sure to match the configuration to the script version number in the HTML
 // (Ex. 3.0 != 3.7.0)
@@ -16,7 +17,15 @@ var config = {
 
 var db = firebase.database()
 
+// Reset users
 var userID = 1
+
+
+var myGame = new game(1,"New Player",0,0)
+
+var myChat = new chat("Chatbot","Welcome to RPS-Chat!")
+
+checkPlayerState(myGame.name)
 
 //create a player object
 function game(id, name, win, loss){
@@ -28,66 +37,49 @@ function game(id, name, win, loss){
 
 
 //create chat object
-function chat(id, message){
-  this.id = id
+function chat(name, message){
+  this.name = name
   this.message = message
 }
 
-var myGame = new game(1,"Test Bot",0,0)
-
-var myChat = new chat(1,[""])
 
 
-$( document ).ready(function() {
-  console.log( "ready!" );
+// checkPlayerState()
+// console.log("checking player state:")
 
-    // var name = "Player 1"
-    // var rpsChosen = ""
-    // var numberWins = 0
-    // var numberLosses = 0
-    
-    // writeUserData(name,rpsChosen,numberWins,numberLosses)
-
-})
-
-$("#add-message").on("click", function(event){
+$(document).on("click", "#add-message", function() { 
+  event.preventDefault();
   //  getUser()
-  checkPlayer2()
+  // checkPlayerTurn()
   //playTheGame()
+
+  $("#textArea").append(myChat.name + ":&nbsp;" + myChat.message + "<br>")
     
 })
 
 
-
-$("#add-player").on("click", function(event){
+$(document).on("click", "#add-player", function() { 
     event.preventDefault();
-
     var name = $("#name-input").val().trim()
-    var rpsChosen = ""
-    var numberWins = 0
-    var numberLosses = 0
+
+    //need to see if player 1 is taken or not.
 
 
-    myGame.id = 1
-    myGame.name = name
-    myGame.win = numberWins
-    myGame.loss = numberLosses
-    new game(1,"Test Bot",0,0)
 
     var myChat = new chat(1,[""])
 
 
-    $("#player1-name").html(name)
-
-    $(".add-player").hide()
-    console.log(db.ref('users'))
-
-    console.log(name)
-    console.log(numberWins)
-    console.log(numberLosses)
     
-    writeUserData(name,rpsChosen,numberWins,numberLosses)
+
+    // $(".add-player").hide()
+    // console.log(db.ref('users'))
+
+    // console.log(name)
+    // console.log(numberWins)
+    // console.log(numberLosses)
     
+    //writeUserData(name,rpsChosen,numberWins,numberLosses)
+    checkPlayerState(name)
 
     // db.ref().push({
     //   name: name,
@@ -98,37 +90,83 @@ $("#add-player").on("click", function(event){
     //   dateAdded: firebase.database.ServerValue.TIMESTAMP  
     // })
 })
+// End Add Player button event handler
 
-function checkPlayer2(){
 
-  var playersRef = db.ref("users/")
-  // var player1name = playersRef[1].name 
-  // var player2name = db.ref("users/").child("2").val().name 
-  //  $("#tester").html=player1name
-  console.log(playersRef)
+
+function checkPlayerState(newName){//this function is called to see if player 1 or player 2 is active
+  var rpsChosen = ""
+  var numberWins = 0
+  var numberLosses = 0
+  var checkP1 = 0
   
-}
+  myGame.name = newName
+  myGame.win = numberWins
+  myGame.loss = numberLosses
 
-function writeUserData(name, rpsChosen, numberWins, numberLosses) {
-  var playersRef = db.ref("users/")      
-  playersRef.set({
-    1:{
-      name: name,
-      numberWins: numberWins,
-      numberLosses: numberLosses,
-      rpsChosen: "",
-      dateAdded: firebase.database.ServerValue.TIMESTAMP    
+  var userRef = db.ref("users/1").child("name")
+//lets check player 1
 
-    },
-    2:{
-      name: "Player 2",
-      numberWins: 0,
-      numberLosses: 0,
-      rpsChosen: "",
-      dateAdded: firebase.database.ServerValue.TIMESTAMP    
-  
+
+
+  userRef.once("value", function(snapshot){
+    var pName = snapshot.val()   
+    console.log("cPS: ",pName)  
+      if(pName === "Player 1"){//oh nobody is player 1 so return 1
+        myGame.id = 1
+        $("#player1-name").html(name)
+        writeUserData(1,newName,0,0,0)
+        $(".add-player").hide()
+        checkP1=1
+        }
+      else{
+        //Player 1 is assigned. you are player two
+        checkP1=2
+      }
+        
+        gameData(2)
+    })  
+
+    console.log(checkP1)
+
+    if(checkP1===2){
+    $("#player2-name").html(name)
+     writeUserData(2,newName,0,0,0)
+     $(".add-player").hide()
     }
-               })
+
+  }
+
+
+
+
+function writeUserData(id, name, rpsChosen, numberWins, numberLosses) {
+  var playersRef = db.ref("users/")  
+  if(id===1){
+    playersRef.update({
+      1:{
+        name: name,
+        numberWins: numberWins,
+        numberLosses: numberLosses,
+        rpsChosen: "",
+        dateAdded: firebase.database.ServerValue.TIMESTAMP    
+  
+      }
+                 })
+  }// end if
+  else if(id===2){
+    console.log("hey im writing for p2 now")
+    playersRef.update({
+      2:{
+        name: name,
+        numberWins: numberWins,
+        numberLosses: numberLosses,
+        rpsChosen: "",
+        dateAdded: firebase.database.ServerValue.TIMESTAMP        
+      }
+                 })
+  }// end else if    
+
   }
 
   function gameData(turn) {
@@ -144,50 +182,37 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
   
 
   function updateUser(userid,name,numberWins,numberLosses,rpsChosen){
-
-    var playersRef = db.ref("users/")
-
     if(userid === 1){
-      playersRef.push({
-        1:{
-          name: name,
-          numberWins: numberWins,
-          numberLosses: numberLosses,
-          rpsChosen: rpsChosen
-        }
-    })
-  }
-  else if(userid === 2){
-    playersRef.push({
-      2:{
-        name: name,
-        numberWins: numberWins,
-        numberLosses: numberLosses,
-        rpsChosen: rpsChosen
-      }
-    })
-  }
-  
-
-    // var userId = firebase.auth().currentUser.uid;
-    // return db.ref('/users/' + userId).once('value').then(function(snapshot) {
-    //   var username = (snapshot.val() && snapshot.val().name) || 'Anonymous';
-    //   console.log('my username is:',username)
-    // });
+      var p1Ref = db.ref("users/1")
+        p1Ref.update ({
+        "name": name,
+        "numberWins": numberWins,
+        "numberLosses": numberLosses,
+        "rpsChosen":rpsChosen,
+        dateAdded: firebase.database.ServerValue.TIMESTAMP  
+        })
+    }
+    else if(userid === 2){
+      var p2Ref = db.ref("users/2")
+      p2Ref.update ({
+      "name": name,
+      "numberWins": numberWins,
+      "numberLosses": numberLosses,
+      "rpsChosen":rpsChosen,
+      dateAdded: firebase.database.ServerValue.TIMESTAMP  
+      })
+    }
   }
 
-
-  $(document).on("click", ".p1rps", function() {
-  
+  // PLAYER 1 SELECTS RPS
+  $(document).on("click", ".p1rps", function() {  
     var state = $(this).attr("data-name")
     console.log("name:",state)
     var currentTurn
     var gameRef = db.ref("game/1").child("turn")
     gameRef.once("value", function(snapshot){
-
-      currentTurn = snapshot.val()
-      
-      
+    currentTurn = snapshot.val()   
+    console.log("OO1:",currentTurn)  
       if(currentTurn === 1){//player 1 turn
         $("#player1-rps").html("<h3>"+state+"</h3>")
         var p1Ref = db.ref("users/1")
@@ -197,26 +222,18 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
         gameData(2)
       }
       console.log("P1snapshot turn:",currentTurn)
-
-    })
-
-   
-    
-  
+    })  
   })
   
-
-  $(document).on("click", ".p2rps", function() {
-  
+  // PLAYER 2 SELECTS RPS
+  $(document).on("click", ".p2rps", function() {  
     var state = $(this).attr("data-name") 
     console.log("name:",state)
     var currentTurn
     var gameRef = db.ref("game/1").child("turn")
     gameRef.once("value", function(snapshot){
-
-      currentTurn = snapshot.val()
-     
-      
+    currentTurn = snapshot.val()     
+    console.log("OO2:",currentTurn)  
       if(currentTurn === 2){//player 1 turn
         $("#player2-rps").html("<h3>"+state+"</h3>")
         var p2Ref = db.ref("users/2")
@@ -225,13 +242,33 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
         })
         gameData(1)
       }
-
       console.log("P2snapshot turn:",currentTurn)
-    })
-
-  
+    }) 
   })
   
+
+
+
+db.ref().on('value', function(snapshot) {
+  if (!snapshot.val()) {
+    return
+  }
+
+  $('#player1-name').text( snapshot.child("users").child("1").val().name )
+  $("#player1-win-count").text( snapshot.child("users").child("1").val().numberWins)
+  $("#player1-loss-count").text( snapshot.child("users").child("1").val().numberLosses)
+
+  $('#player2-name').text( snapshot.child("users").child("2").val().name )
+  $("#player2-win-count").text( snapshot.child("users").child("2").val().numberWins)
+  $("#player2-loss-count").text( snapshot.child("users").child("2").val().numberLosses)
+  // console.log(snapshot.val())
+},
+function(error) {
+  console.error('Firebase error: ', error)
+
+})
+
+
 
 // db.ref().orderByChild("dateAdded").on("child_added", function(childSnapshot) {
 
@@ -262,26 +299,35 @@ function writeUserData(name, rpsChosen, numberWins, numberLosses) {
 // }
 
 
-db.ref().on('value', function(snapshot) {
-  if (!snapshot.val()) {
-    return
-  }
 
-  $('#player1-name').text( snapshot.child("users").child("1").val().name )
-  $("#player1-win-count").text( snapshot.child("users").child("1").val().numberWins)
-  $("#player1-loss-count").text( snapshot.child("users").child("1").val().numberLosses)
 
-  $('#player2-name').text( snapshot.child("users").child("2").val().name )
-  $("#player2-win-count").text( snapshot.child("users").child("2").val().numberWins)
-  $("#player2-loss-count").text( snapshot.child("users").child("2").val().numberLosses)
-  // console.log(snapshot.val())
-},
-function(error) {
-  console.error('Firebase error: ', error)
+
+
+// function checkPlayerTurn(){
+
+//   var userRef = db.ref("users/1").child("name")
+//   userRef.once("value", function(snapshot){
+//     var currentTurn = snapshot.val()     
+//       if(currentTurn === 1){//player 1 turn
+//         $("#player1-rps").html("<h3>"+state+"</h3>")
+//         var p1Ref = db.ref("users/1")
+//         p1Ref.update ({
+//         "rpsChosen": state
+//         })
+//         gameData(2)
+//       }
+//       console.log("P1snapshot xxx turn:",currentTurn)
+//     })  
+
+
+  
+//   var playersRef = db.ref("users/")
+//   // var player1name = playersRef[1].name 
+//   // var player2name = db.ref("users/").child("2").val().name 
+//   //  $("#tester").html=player1name
+//   console.log(playersRef)
+  
+// }
+
 
 })
-
-
-
-// checkPlayer2()
-
