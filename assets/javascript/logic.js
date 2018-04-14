@@ -21,18 +21,27 @@ var db = firebase.database()
 var userID = 1
 
 
-var myGame = new game(1,"New Player",0,0)
+var myGame = new game(1,"Player 1","",0,0,2,"Player 2", "",0,0)
 
 var myChat = new chat("Chatbot","Welcome to RPS-Chat!")
 
-checkPlayerState(myGame.name)
+// checkPlayerState(myGame.name)
 
+updateUser(1,"Player 1",0,0,"")
+updateUser(2,"Player 2",0,0,"")
+gameData(1,0)
 //create a player object
-function game(id, name, win, loss){
-  this.id = id
-  this.name = name
-  this.win = win
-  this.loss = loss
+function game(id1, name1, rps1, win1, loss1, id2, name2, rps2, win2, loss2){
+  this.id1 = id1
+  this.name1 = name1
+  this.rps1 = rps1
+  this.win1 = win1
+  this.loss1 = loss1
+  this.id2 = id2
+  this.name2 = name2
+  this.rps2 = rps2
+  this.win2 = win2
+  this.loss2 = loss2
 }
 
 
@@ -80,7 +89,7 @@ $(document).on("click", "#add-player", function() {
     
     //writeUserData(name,rpsChosen,numberWins,numberLosses)
     checkPlayerState(name)
-
+    gameData(1,0)
     // db.ref().push({
     //   name: name,
     //   playerChosen: playerChosen,
@@ -104,18 +113,26 @@ function checkPlayerState(newName){//this function is called to see if player 1 
   myGame.win = numberWins
   myGame.loss = numberLosses
 
+  // if(newName==="New Player"){
+  //   $(".add-player").show()
+  // }
+
   var userRef = db.ref("users/1").child("name")
+
+
 //lets check player 1
 
 
 
   userRef.once("value", function(snapshot){
-    var pName = snapshot.val()   
+    var pName = snapshot.val()
+    
     console.log("cPS: ",pName)  
       if(pName === "Player 1"){//oh nobody is player 1 so return 1
-        myGame.id = 1
+        myGame.id1 = 1
+        myGame.name1 = newName
         $("#player1-name").html(name)
-        writeUserData(1,newName,0,0,0)
+        writeUserData(1,newName,0,0,"")
         $(".add-player").hide()
         checkP1=1
         }
@@ -124,14 +141,14 @@ function checkPlayerState(newName){//this function is called to see if player 1 
         checkP1=2
       }
         
-        gameData(2)
+        gameData(2,0)
     })  
 
     console.log(checkP1)
 
     if(checkP1===2){
     $("#player2-name").html(name)
-     writeUserData(2,newName,0,0,0)
+     writeUserData(2,newName,0,0,"")
      $(".add-player").hide()
     }
 
@@ -169,11 +186,12 @@ function writeUserData(id, name, rpsChosen, numberWins, numberLosses) {
 
   }
 
-  function gameData(turn) {
+  function gameData(turn,whowon) {
     var turnRef = db.ref("game/")      
     turnRef.set({
       1:{
         turn: turn,
+        whowon: whowon,
         dateAdded: firebase.database.ServerValue.TIMESTAMP    
   
         }
@@ -215,11 +233,13 @@ function writeUserData(id, name, rpsChosen, numberWins, numberLosses) {
     console.log("OO1:",currentTurn)  
       if(currentTurn === 1){//player 1 turn
         $("#player1-rps").html("<h3>"+state+"</h3>")
+        myGame.rps1=state
         var p1Ref = db.ref("users/1")
+        console.log("iamfiring")
         p1Ref.update ({
         "rpsChosen": state
         })
-        gameData(2)
+        gameData(2,0)
       }
       console.log("P1snapshot turn:",currentTurn)
     })  
@@ -234,13 +254,15 @@ function writeUserData(id, name, rpsChosen, numberWins, numberLosses) {
     gameRef.once("value", function(snapshot){
     currentTurn = snapshot.val()     
     console.log("OO2:",currentTurn)  
-      if(currentTurn === 2){//player 1 turn
+      if(currentTurn === 2){//player 2 turn
+        myGame.rps2=state
         $("#player2-rps").html("<h3>"+state+"</h3>")
         var p2Ref = db.ref("users/2")
         p2Ref.update ({
         "rpsChosen": state
         })
-        gameData(1)
+        playTheGame()
+        gameData(1,0)
       }
       console.log("P2snapshot turn:",currentTurn)
     }) 
@@ -253,6 +275,28 @@ db.ref().on('value', function(snapshot) {
   if (!snapshot.val()) {
     return
   }
+
+myGame.name1 = snapshot.child("users").child("1").val().name
+myGame.win1 = snapshot.child("users").child("1").val().numberWins
+myGame.loss1 = snapshot.child("users").child("1").val().numberLosses
+myGame.rps1 = snapshot.child("users").child("1").val().rpsChosen
+
+myGame.name2 = snapshot.child("users").child("2").val().name
+myGame.win2 = snapshot.child("users").child("2").val().numberWins
+myGame.loss2 = snapshot.child("users").child("2").val().numberLosses
+myGame.rps2 = snapshot.child("users").child("2").val().rpsChosen
+
+var whowon = snapshot.child("game").child("1").val().whowon
+
+if(whowon===1){
+  $("#results").html("Player 1 WINS!!!")
+}
+else if(whowon===2){
+  $("#results").html("Player 2 WINS!!!")
+}
+else if(whowon===3){
+  $("#results").html("Its a TIE!!!")
+}
 
   $('#player1-name').text( snapshot.child("users").child("1").val().name )
   $("#player1-win-count").text( snapshot.child("users").child("1").val().numberWins)
@@ -289,14 +333,44 @@ function(error) {
 
 
 
-// function playTheGame(){
-//   var winRef = db.ref().child("users").child("1").child('numberWins');
+function playTheGame(){
 
-//   winRef.transaction(function(currentNumberWins) {
-//      return currentNumberWins + 1;
-//   })
+  if(myGame.rps1===myGame.rps2){
+    //tie
+    $("#results").html("IT'S A TIE!!!")
+  }
+  else if(myGame.rps1==="paper" && myGame.rps2==="rock"){
 
-// }
+    var gRef = db.ref("turn/1")
+    p2Ref.update ({
+    "whowon":1
+    })
+
+
+    
+  }
+  else if(myGame.rps1==="paper" && myGame.rps2==="scissors"){
+    $("#results").html("Player 2 WINS!!!")
+  }
+  else if(myGame.rps1==="scissors" && myGame.rps2==="rock"){
+    $("#results").html("Player 2 WINS!!!")
+  }
+  else if(myGame.rps1==="scissors" && myGame.rps2==="paper"){
+    $("#results").html("Player 1 WINS!!!")
+  }
+  else if(myGame.rps1==="rock" && myGame.rps2==="scissors"){
+    $("#results").html("Player 1 WINS!!!")
+  }
+  else if(myGame.rps1==="rock" && myGame.rps2==="paper"){
+    $("#results").html("Player 2 WINS!!!")
+  }
+  // var winRef = db.ref().child("users").child("1").child('numberWins');
+
+  // winRef.transaction(function(currentNumberWins) {
+  //    return currentNumberWins + 1;
+  // })
+
+}
 
 
 
